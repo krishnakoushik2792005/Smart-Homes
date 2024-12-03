@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHomes - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='home.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .login-link, .logout-link {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 16px;
+            color: #fff;
+            text-decoration: none;
+        }
+        .welcome-message {
+            position: absolute;
+            top: 10px;
+            right: 100px;
+            font-size: 16px;
+            color: #fff;
+        }
+        /* Profile button base styles */
+.profile-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon styles */
+.profile-link svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+/* Hover effects */
+.profile-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Active state */
+.profile-link:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus state for accessibility */
+.profile-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Optional: Add a media query for smaller screens */
+@media (max-width: 768px) {
+    .profile-link {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+    
+    .profile-link svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+/* Position the contact info at the bottom left of the page */
+.contact-info {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-size: 14px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5); /* Optional: for better visibility */
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Optional: Style the contact text to be more readable */
+.contact-info p {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="home-container">
+        <!-- Display login/logout and username based on user authentication status -->
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('profile') }}" class="profile-link">profile</a>
+            <span class="welcome-message">Hi, {{ current_user.username }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="login-link">Login here</a>
+        {% endif %}
+        
+        <!-- Header with welcome message -->
+        <header>
+            <h1>Welcome to SmartHomes</h1>
+            <p>Explore options for building and renting homes.</p>
+        </header>
+
+        <!-- Centered navigation links -->
+        <nav class="button-container">
+            <ul>
+                <li><a href="{{ url_for('design') }}" class="button">Design Your Home</a></li>
+                <li><a href="{{ url_for('rentals') }}" class="button">Virtual Rentals</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Contact Information -->
+    <div class="contact-info">
+        <p>Contact us: smarthomes@gmail.com</p>
+    </div>
+</body>
+</html>

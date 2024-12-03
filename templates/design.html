@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHomes - Design Your Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='design.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+</style>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>SMART HOMES</h1>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('rentals') }}">Virtual Rentals</a>
+        </nav>
+    </header>
+
+    <!-- Main Section -->
+    <section>
+        <h2>Design Your Home</h2>
+        <p>Customize your dream home with our interactive design tools.</p>
+
+        <div class="design-tools">
+            <label>Describe The Room Like You Want:</label>
+            <textarea id="houseDescription" placeholder="Enter description here..." rows="4"></textarea>
+            
+            <div>
+                <button onclick="showPreview()">Show Preview</button>
+                <button onclick="resetDesign()">Reset Design</button>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview" id="preview">
+            <h3>Preview of Your Dream House</h3>
+            <div id="imagePreview"></div>
+            <p id="descriptionPreview"></p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 SmartHomes. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
