@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,Request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -7,6 +7,18 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, Email
 from werkzeug.utils import secure_filename
+import openai
+from dotenv import load_dotenv
+from openai import OpenAIError
+import requests
+from huggingface_hub import InferenceClient,HfApi
+import os
+from PIL import Image
+import base64
+import io
+from huggingface_hub import login
+
+login(token=os.getenv("HF_API_KEY"))
 
 import os
 
@@ -15,6 +27,12 @@ app.config['SECRET_KEY'] = 'csaekk'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+load_dotenv()
+
+client = InferenceClient(
+    provider="hf-inference",
+    api_key=os.getenv("HF_API_KEY")  # Set your Hugging Face API key in the environment variables
+)
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -124,6 +142,43 @@ def rentals():
 def design():
     return render_template('design.html')
 
+
+
+
+@app.route('/generate_image', methods=['POST'])
+@login_required
+def generate_image():
+    try:
+        data = request.get_json()
+        if not data or 'prompt' not in data:
+            return jsonify({"error": "No prompt provided"}), 400
+
+        prompt = data['prompt'].strip()
+        if not prompt:
+            return jsonify({"error": "Prompt cannot be empty"}), 400
+
+        # Print out API key for debugging (remove in production)
+        print(f"API Key: {os.getenv('HF_API_KEY')}")
+
+        try:
+            image = client.text_to_image(
+                prompt=prompt,
+                model="ZB-Tech/Text-to-Image"
+            )
+        except Exception as api_error:
+            app.logger.error(f"Hugging Face API Error: {str(api_error)}")
+            return jsonify({"error": f"API Error: {str(api_error)}"}), 401
+
+        # Convert PIL image to base64 for easy rendering in the frontend
+        buffered = io.BytesIO()
+        image.save(buffered, format="PNG")
+        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        return jsonify({"image_url": f"data:image/png;base64,{image_base64}"})
+
+    except Exception as e:
+        app.logger.error(f"Unexpected Error: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
 @app.route('/submit_listing', methods=['POST'])
 @login_required
 def submit_listing():
@@ -208,3 +263,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
