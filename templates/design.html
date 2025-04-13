@@ -35,25 +35,56 @@
             <textarea id="houseDescription" placeholder="Enter description here..." rows="4"></textarea>
             
             <div>
-                <button onclick="showPreview()">Show Preview</button>
+                <button onclick="generateImage()">Show Preview</button>
                 <button onclick="resetDesign()">Reset Design</button>
             </div>
         </div>
-
-        <!-- Preview Section -->
         <div class="preview" id="preview">
             <h3>Preview of Your Dream House</h3>
             <div id="imagePreview"></div>
             <p id="descriptionPreview"></p>
         </div>
-    </section>
+        
+        <script>
 
-    <!-- Footer -->
-    <footer>
-        <p>© 2024 SmartHomes. All Rights Reserved.</p>
-    </footer>
+async function generateImage() {
+    const prompt = document.getElementById("houseDescription").value.trim();
+    const imagePreview = document.getElementById("imagePreview");
 
-    <!-- JavaScript -->
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    if (!prompt) {
+        alert("Please enter a description first!");
+        return;
+    }
+
+    try {
+        const response = await fetch("/generate_image", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ prompt }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to generate image");
+        }
+
+        // Display the generated image
+        imagePreview.innerHTML = `<img src="${data.image_url}" alt="Generated Room" style="max-width: 100%; height: auto;">`;
+    } catch (error) {
+        console.error("Error:", error);
+        alert(error.message);
+    }
+}
+
+        
+        function resetDesign() {
+            document.getElementById("houseDescription").value = "";
+            document.getElementById("imagePreview").innerHTML = "";
+        }
+        </script>
 </body>
 </html>
+
